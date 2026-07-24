@@ -8,16 +8,20 @@ import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 import java.util.UUID
 
 object LevelUpDisplay : Listener {
+    private var soundTask: BukkitTask? = null
+
     private val sound = PlayableSound.create(plugin.configYml.getSubsection("skills.level-up.sound"))
 
     private val soundsToPlay = mutableSetOf<UUID>()
 
     internal fun startTickingSounds() {
-        plugin.scheduler.runTimer(1, 1) {
+        soundTask?.cancel()
+        soundTask = plugin.scheduler.runTimer(1, 1) {
             for (uuid in soundsToPlay) {
                 val player = Bukkit.getPlayer(uuid) ?: continue
                 sound?.playTo(player)

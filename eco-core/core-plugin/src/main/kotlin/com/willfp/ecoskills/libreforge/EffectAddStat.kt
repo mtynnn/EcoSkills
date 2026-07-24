@@ -23,6 +23,8 @@ object EffectAddStat : Effect<NoCompileData>("add_stat") {
 
     override val categories = setOf("player")
 
+    override val shouldReload = false
+
     override val runOrder = RunOrder.START
 
     override val arguments = arguments {

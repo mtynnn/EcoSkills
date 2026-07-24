@@ -30,6 +30,7 @@ import com.willfp.ecoskills.libreforge.EffectMultiplyStat
 import com.willfp.ecoskills.libreforge.EffectMultiplyStatTemporarily
 import com.willfp.ecoskills.libreforge.EffectSkillXpMultiplier
 import com.willfp.ecoskills.libreforge.FilterMagicType
+import com.willfp.ecoskills.libreforge.FilterIsAbility
 import com.willfp.ecoskills.libreforge.FilterSkill
 import com.willfp.ecoskills.libreforge.FilterSkillCrit
 import com.willfp.ecoskills.libreforge.TriggerGainSkillXp
@@ -75,13 +76,13 @@ class EcoSkillsPlugin : LibreforgePlugin() {
         )
     }
 
-    override fun handleEnable() {
-        registerSpecificHolderProvider<Player> { player ->
-            if (player.isInDisabledWorld) emptyList() else
-                (Effects.values() union Stats.values())
-                    .mapNotNull { it.getLevelHolder(it.getActualLevel(player)) }
-                    .map { SimpleProvidedHolder(it) }
-        }
+    override fun handleLoad() {
+        Conditions.register(ConditionStatAbove)
+        Conditions.register(ConditionStatBelow)
+        Conditions.register(ConditionStatEquals)
+        Conditions.register(ConditionHasSkillLevel)
+        Conditions.register(ConditionBelowMagic)
+        Conditions.register(ConditionAboveMagic)
 
         com.willfp.libreforge.effects.Effects.register(EffectAddStat)
         com.willfp.libreforge.effects.Effects.register(EffectMultiplyStat)
@@ -95,18 +96,22 @@ class EcoSkillsPlugin : LibreforgePlugin() {
         com.willfp.libreforge.effects.Effects.register(EffectAddStatTemporarily)
         com.willfp.libreforge.effects.Effects.register(EffectMultiplyStatTemporarily)
         com.willfp.libreforge.effects.Effects.register(EffectMagicRegenMultiplier)
-        Conditions.register(ConditionStatAbove)
-        Conditions.register(ConditionStatBelow)
-        Conditions.register(ConditionStatEquals)
-        Conditions.register(ConditionHasSkillLevel)
-        Conditions.register(ConditionBelowMagic)
-        Conditions.register(ConditionAboveMagic)
         Triggers.register(TriggerGainSkillXp)
         Triggers.register(TriggerLevelUpSkill)
         Triggers.register(TriggerRegenMagic)
         Filters.register(FilterSkill)
         Filters.register(FilterSkillCrit)
         Filters.register(FilterMagicType)
+        Filters.register(FilterIsAbility)
+    }
+
+    override fun handleEnable() {
+        registerSpecificHolderProvider<Player> { player ->
+            if (player.isInDisabledWorld) emptyList() else
+                (Effects.values() union Stats.values())
+                    .mapNotNull { it.getLevelHolder(it.getActualLevel(player)) }
+                    .map { SimpleProvidedHolder(it) }
+        }
 
         if (this.configYml.getBool("leaderboard.enabled")) {
             EcoSkillsTopPlaceholder.register()

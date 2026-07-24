@@ -25,6 +25,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 import java.util.UUID
 
@@ -51,6 +52,8 @@ val Player.isXPGainSoundEnabled: Boolean
     get() = this.profile.read(xpGainSoundEnabledKey)
 
 object GainXPDisplay : Listener {
+    private var soundTask: BukkitTask? = null
+
     private val gainCache: EcoCache<PlayerSkill, Double> = EcoCache.builder<PlayerSkill, Double>().expireAfterWrite(Duration.ofSeconds(3))
         .build()
 
@@ -59,7 +62,8 @@ object GainXPDisplay : Listener {
     private val soundsToPlay = mutableSetOf<UUID>()
 
     internal fun startTickingSounds() {
-        plugin.scheduler.runTimer(1, 1) {
+        soundTask?.cancel()
+        soundTask = plugin.scheduler.runTimer(1, 1) {
             for (uuid in soundsToPlay) {
                 val player = Bukkit.getPlayer(uuid) ?: continue
                 sound?.playTo(player)

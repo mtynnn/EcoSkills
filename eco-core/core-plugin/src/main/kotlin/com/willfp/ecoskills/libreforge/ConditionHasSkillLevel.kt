@@ -45,9 +45,15 @@ object ConditionHasSkillLevel : Condition<NoCompileData>("has_skill_level") {
     ): Boolean {
         val player = dispatcher.get<Player>() ?: return false
 
-        val skill = Skills.getByID(config.getString("skill").lowercase()) ?: return false
+        val skillId = config.getString("skill").lowercase()
+        val skill = Skills.getByID(skillId)
+        if (skill == null) {
+            return false
+        }
 
-        return player.getSkillLevel(skill) >= config.getIntFromExpression("level", player)
+        val actual = player.getSkillLevel(skill)
+        val required = config.getIntFromExpression("level", player)
+        return actual >= required
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

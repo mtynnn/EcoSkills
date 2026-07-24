@@ -7,6 +7,7 @@ import com.willfp.libreforge.loader.configs.RegistrableCategory
 
 object MagicTypes : RegistrableCategory<MagicType>("magic_type", "magic_types") {
     override val supportsSharing = false
+    override val shouldPreload = true
 
     override fun clear(plugin: LibreforgePlugin) {
         for (type in registry.values()) {

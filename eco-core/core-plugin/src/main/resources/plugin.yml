@@ -4,10 +4,14 @@ main: com.willfp.ecoskills.EcoSkillsPlugin
 api-version: 1.21.8
 authors: [ Auxilor ]
 website: willfp.com
+load: STARTUP
 depend:
   - eco
 softdepend:
   - libreforge
+loadbefore:
+  - EcoEnchants
+  - EcoItems
 
 commands:
   ecoskills:

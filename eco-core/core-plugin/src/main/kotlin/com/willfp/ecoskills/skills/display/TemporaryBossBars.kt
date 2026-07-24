@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitTask
 
 // Maps BossBar's to their expiry time
 private val bossBars = mutableMapOf<NamespacedKey, Long>()
@@ -38,8 +39,11 @@ fun Player.sendTemporaryBossBar(
 }
 
 object TemporaryBossBarHandler {
+    private var tickingTask: BukkitTask? = null
+
     internal fun startTicking() {
-        plugin.scheduler.runTimer(5, 5) {
+        tickingTask?.cancel()
+        tickingTask = plugin.scheduler.runTimer(5, 5) {
             val iterator = bossBars.iterator()
 
             while (iterator.hasNext()) {

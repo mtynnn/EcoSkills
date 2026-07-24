@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
 
 private const val ACTION_BAR_DURATION = 2700L
@@ -84,6 +85,8 @@ object ActionBarGamemodeListener : Listener {
 }
 
 object ActionBarHandler {
+    private var tickingTask: BukkitTask? = null
+
     private val disabledWorlds = plugin.configYml
         .getStrings("persistent-action-bar.disabled-in-worlds")
 
@@ -123,7 +126,9 @@ object ActionBarHandler {
     }
 
     internal fun startTicking() {
-        plugin.scheduler.runTimer(5, 5) {
+        tickingTask?.cancel()
+        val interval = plugin.configYml.getInt("persistent-action-bar.interval", 10).coerceAtLeast(1).toLong()
+        tickingTask = plugin.scheduler.runTimer(interval, interval) {
             for (player in Bukkit.getOnlinePlayers()) {
                 trySendMessage(player)
             }

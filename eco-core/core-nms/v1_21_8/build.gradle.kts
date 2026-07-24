@@ -7,6 +7,12 @@ plugins {
 group = "com.willfp"
 version = rootProject.version
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 dependencies {
     implementation("net.kyori:adventure-text-serializer-ansi:4.18.0")
     paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")

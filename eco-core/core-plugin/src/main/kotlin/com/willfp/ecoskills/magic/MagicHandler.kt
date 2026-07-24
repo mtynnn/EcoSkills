@@ -6,11 +6,15 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.scheduler.BukkitTask
 
 object MagicHandler {
+    private var tickingTask: BukkitTask? = null
+
     internal fun startTicking() {
         // Stagger to avoid lag spikes with other plugins? Maybe?
-        plugin.scheduler.runTimer(18, 20) {
+        tickingTask?.cancel()
+        tickingTask = plugin.scheduler.runTimer(18, 20) {
             for (player in Bukkit.getOnlinePlayers()) {
                 for (type in MagicTypes.values()) {
                     type.tick(player)
